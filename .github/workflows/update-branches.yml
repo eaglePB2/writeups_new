@@ -41,12 +41,18 @@ jobs:
             fi
           done
 
-          # Check for merge conflicts and resolve them
-          if git ls-files -u | grep -q "README.md"; then
-            echo "Conflicts found in README.md, resolving by using the version from main"
-            git checkout main -- README.md
-            git add README.md
-            git commit -m "Resolve conflicts and replace README.md files from main"
+          # Resolve conflicts in other files
+          if git status --porcelain | grep -q "CONFLICT"; then
+            echo "Conflicts found, resolving by using the version from main for conflicted files"
+            
+            # Resolve conflicts by keeping files from the main branch
+            git diff --name-only --diff-filter=U | while read -r conflicted_file; do
+              echo "Resolving conflict in $conflicted_file by using main's version"
+              git checkout main -- "$conflicted_file"
+              git add "$conflicted_file"
+            done
+            
+            git commit -m "Resolve conflicts and replace conflicted files with versions from main"
           else
             # Commit if no conflicts
             git commit -m "Merge main into $branch with forced replacement of README.md files"
