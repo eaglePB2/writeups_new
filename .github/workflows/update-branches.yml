@@ -25,13 +25,13 @@ jobs:
 
     - name: Merge main into branches
       run: |
-        branches=("python")
+        branches=("python" "java" "cpp" "javascript")
         for branch in "${branches[@]}"; do
           git checkout $branch
           git merge main --allow-unrelated-histories
           if [ $? -eq 0 ]; then
             echo "Successfully merged new questions into $branch"
-            git push origin $branch
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $branch
           else
             echo "Merge conflict in $branch. Please resolve manually."
             exit 1
