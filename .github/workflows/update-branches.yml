@@ -28,14 +28,10 @@ jobs:
         branches=("python" "C" "C#" "C++" "java" "javascript")
         for branch in "${branches[@]}"; do
           git checkout $branch
-          git merge main --allow-unrelated-histories
-          if [ $? -eq 0 ]; then
-            echo "Successfully merged new questions into $branch"
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $branch
-          else
-            echo "Merge conflict in $branch. Please resolve manually."
-            exit 1
-          fi
+          git merge --no-commit main --allow-unrelated-histories
+          git restore --source=$branch --staged --worktree -- .github/workflows/
+          git commit -m "Merge main into $branch excluding .github/workflows"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $branch
         done
 
     - name: Checkout main again
