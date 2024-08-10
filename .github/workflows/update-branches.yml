@@ -25,7 +25,7 @@ jobs:
 
     - name: Merge main into branches
       run: |
-        branches=("python")
+        branches=("python" "C" "C#" "C++" "java" "javascript")
         for branch in "${branches[@]}"; do
           git checkout $branch
           git merge main --allow-unrelated-histories
