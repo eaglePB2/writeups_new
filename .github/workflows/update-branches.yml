@@ -28,7 +28,7 @@ jobs:
         branches=("python")
         for branch in "${branches[@]}"; do
           git checkout $branch
-          git merge main
+          git merge main --allow-unrelated-histories
           if [ $? -eq 0 ]; then
             echo "Successfully merged new questions into $branch"
             git push origin $branch
