@@ -20,7 +20,7 @@ Print a line that contains all values of $n$ during the algorithm.
 | | |
 |--|--|
 |Time| $1.00s$ |
-|Memory| $512$MB |
+|Memory| 512MB |
 |Constraints| $$1\le n\le 10^{6} $$|
 
 ## Testcases
