@@ -33,16 +33,27 @@ jobs:
           # Restore .github/workflows directory to its original state
           git restore --source=$branch --staged --worktree -- .github/workflows/
 
-          # Force replace README.md files
-          if git ls-files --error-unmatch README.md > /dev/null 2>&1; then
+          # Force replace README.md files and handle conflicts
+          for file in README.md; do
+            if git ls-files --error-unmatch $file > /dev/null 2>&1; then
+              git checkout main -- $file
+              git add $file
+            fi
+          done
+
+          # Check for merge conflicts and resolve them
+          if git ls-files -u | grep -q "README.md"; then
+            echo "Conflicts found in README.md, resolving by using the version from main"
             git checkout main -- README.md
             git add README.md
+            git commit -m "Resolve conflicts and replace README.md files from main"
+          else
+            # Commit if no conflicts
+            git commit -m "Merge main into $branch with forced replacement of README.md files"
           fi
-          
-          git commit -m "Merge main into $branch with forced replacement of .README files"
-          
+
           # Push changes
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $branch
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} $branch || exit 0
         done
 
     - name: Checkout main again
